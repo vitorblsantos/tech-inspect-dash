@@ -1,0 +1,7 @@
+export { PageHome } from './home/home.pages'
+export { PageInspecoes } from './inspecoes/inspecoes.pages'
+export { PageInspecoesDetails } from './inspecoes-details/inspecoes-details.pages'
+export { PageInspecoesNew } from './inspecoes-new/inspecoes-new.pages'
+export { PageNotifications } from './notifications/notifications.pages'
+export { PageSignIn } from './signin/signin.pages'
+export { PageSignUp } from './signup/signup.pages'

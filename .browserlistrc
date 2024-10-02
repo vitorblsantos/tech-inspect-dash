@@ -1,0 +1,21 @@
+# Suporta os últimos dois lançamentos das principais navegadores
+last 2 Chrome versions
+last 2 Firefox versions
+last 2 Safari versions
+last 2 Edge versions
+
+# Suporte para navegadores iOS e Android
+last 2 iOS versions
+last 2 Android versions
+
+# Mantém suporte para o IE11 caso necessário
+IE 11
+
+# Exclui qualquer versão do Opera Mini
+not OperaMini all
+
+# Navegadores com mais de 0.5% de participação no mercado
+> 0.5%
+
+# Exclui navegadores que não estão mais sendo mantidos
+not dead
