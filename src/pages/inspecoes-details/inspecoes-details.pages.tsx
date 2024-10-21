@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import {
   Box,
   Chip,
@@ -11,68 +12,43 @@ import {
 } from '@mui/material'
 
 import { ComponentFooter, ComponentHeader, ComponentView } from '../../components/index.components'
-import { useParams } from 'react-router-dom'
+import { EInspectionStatus } from '../../interfaces/index.interfaces'
+import { ServiceBFF } from '../../services/index.services'
 
-const inspections = [
-  {
-    id: 'INS-001',
-    createdAt: '2024-09-01',
-    updatedAt: '2024-09-10',
-    status: 'Concluído',
-    building: 'Edifício Central',
-    inspector: 'João Silva',
-    description: 'Inspeção completa do edifício central. Relatório sem pendências.',
-    images: ['img1.jpg', 'img2.jpg', 'img3.jpg'],
-  },
-  {
-    id: 'INS-002',
-    createdAt: '2024-09-05',
-    updatedAt: '2024-09-08',
-    status: 'Em Progresso',
-    building: 'Edifício Alfa',
-    inspector: 'Maria Souza',
-    description: 'Inspeção em andamento no Edifício Alfa.',
-    images: ['img4.jpg', 'img5.jpg'],
-  },
-  {
-    id: 'INS-003',
-    createdAt: '2024-09-03',
-    updatedAt: '2024-09-06',
-    status: 'Pendente',
-    building: 'Edifício Beta',
-    inspector: 'Carlos Pereira',
-    description: 'Inspeção não finalizada devido à falta de acesso a certas áreas.',
-    images: [],
-  },
-]
+const InspectionDetails = () => {
+  const [data, setData] = useState<any>({})
 
-const InspectionDetails: React.FC = () => {
   const { id } = useParams()
-  const inspection = inspections.find((insp) => insp.id === id);
 
-  if (!inspection) {
-    return <Typography>Inspeção não encontrada.</Typography>;
+    const handleData = async () => {
+    const { data }: { data: any } = await ServiceBFF.get(`/inspecoes/${id}`)
+
+    setData(data)
   }
+
+  useEffect(() => {
+    handleData()
+  }, [])
 
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Detalhes da Inspeção - {inspection.id}
+        Detalhes da Inspeção - {data?.id}
       </Typography>
 
       <Paper sx={{ p: 3 }}>
         <List>
           <ListItem>
-            <ListItemText primary="Edifício" secondary={inspection.building} />
+            <ListItemText primary="Edifício" secondary={data?.edificio} />
           </ListItem>
           <ListItem>
-            <ListItemText primary="Inspetor" secondary={inspection.inspector} />
+            <ListItemText primary="Inspetor" secondary={data?.inspetor} />
           </ListItem>
           <ListItem>
-            <ListItemText primary="Criado em" secondary={inspection.createdAt} />
+            <ListItemText primary="Criado em" secondary={data ? new Date(data?.created_at?._seconds * 1000).toLocaleString() : '--/--/----'} />
           </ListItem>
           <ListItem>
-            <ListItemText primary="Atualizado em" secondary={inspection.updatedAt} />
+            <ListItemText primary="Atualizado em" secondary={data ? new Date(data?.updated_at?._seconds * 1000).toLocaleString() : '--/--/----'} />
           </ListItem>
         </List>
 
@@ -82,9 +58,9 @@ const InspectionDetails: React.FC = () => {
           Status
         </Typography>
         <Chip
-          label={inspection.status}
+          label={data?.status}
           color={
-            inspection.status === 'Concluído' ? 'success' : inspection.status === 'Em Progresso' ? 'primary' : 'default'
+            data?.status === EInspectionStatus.DONE ? 'success' : data?.status === EInspectionStatus.PROCESSING ? 'primary' : 'default'
           }
           sx={{ mb: 2 }}
         />
@@ -95,22 +71,47 @@ const InspectionDetails: React.FC = () => {
           Descrição da Inspeção
         </Typography>
         <Typography variant="body1" gutterBottom>
-          {inspection.description}
+          {data?.description}
         </Typography>
 
         <Divider sx={{ my: 2 }} />
 
         <Typography variant="h6" gutterBottom>
-          Imagens
+          Imagens enviadas
         </Typography>
 
-        {inspection.images.length > 0 ? (
+        {data?.images && !!data.images.length ? (
           <Box sx={{ display: 'flex', gap: 2 }}>
-            {inspection.images.map((img, index) => (
+            {data.images.map((el: any, index: number) => (
               <img
                 key={index}
-                src={img}
-                alt={`Inspeção ${inspection.id} - ${index}`}
+                src={el.original}
+                alt={`Inspeção ${data?.id} - ${index}`}
+                width="100px"
+                height="100px"
+                style={{ objectFit: 'cover', borderRadius: '8px' }}
+              />
+            ))}
+          </Box>
+        ) : (
+          <Typography variant="body1" color="textSecondary">
+            Nenhuma imagem disponível.
+          </Typography>
+        )}
+
+        <Divider sx={{ my: 2 }} />
+
+        <Typography variant="h6" gutterBottom>
+          Analises
+        </Typography>
+
+        {data?.images && !!data.images.manipulated ? (
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            {data.images.manipulated.map((el: any, index: number) => (
+              <img
+                key={index}
+                src={el.original}
+                alt={`Inspeção ${data?.id} - ${index}`}
                 width="100px"
                 height="100px"
                 style={{ objectFit: 'cover', borderRadius: '8px' }}

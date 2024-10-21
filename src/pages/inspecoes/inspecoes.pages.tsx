@@ -18,8 +18,9 @@ import { ComponentFooter, ComponentHeader, ComponentView } from '../../component
 import { useNavigate } from 'react-router-dom'
 import { grey, red } from '@mui/material/colors'
 import { ServiceBFF } from '../../services/index.services'
+import { EInspectionStatus, IInspection } from '../../interfaces/index.interfaces'
 
-const FloatingActionButton: React.FC = () => {
+const FloatingActionButton = () => {
   const navigate = useNavigate()
 
   const redirect = (page: string) => {
@@ -50,13 +51,7 @@ const FloatingActionButton: React.FC = () => {
 
 const InspectionManagement: React.FC = () => {
   const [inspections, setInspections] = useState<
-    | {
-        id: string
-        createdAt: string
-        updatedAt: string
-        status: string
-        building: string
-      }[]
+    | IInspection[]
     | null
   >(null)
 
@@ -67,7 +62,7 @@ const InspectionManagement: React.FC = () => {
   }
 
   const handleData = async () => {
-    const { data } = await ServiceBFF.get('/inspecoes/list')
+    const { data } = await ServiceBFF.get('/inspecoes')
     setInspections(data)
   }
 
@@ -95,25 +90,25 @@ const InspectionManagement: React.FC = () => {
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
-                    primary={inspection.building}
+                    primary={inspection.edificio}
                     secondary={
                       <>
                         <Typography component="span" variant="body2" color="textPrimary">
                           Identificador: {inspection.id}
                         </Typography>
                         {' — '}
-                        Criado em: {inspection.createdAt}
+                        Criado em: {new Date(inspection.created_at._seconds * 1000).toLocaleDateString()}
                         {' — '}
-                        Atualizado em: {inspection.updatedAt}
+                        Atualizado em: {new Date(inspection.updated_at._seconds * 1000).toLocaleDateString()}
                       </>
                     }
                   />
                   <Chip
                     label={inspection.status}
                     color={
-                      inspection.status === 'Concluído'
+                      inspection.status === EInspectionStatus.DONE
                         ? 'success'
-                        : inspection.status === 'Em Progresso'
+                        : inspection.status === EInspectionStatus.PROCESSING
                           ? 'primary'
                           : 'default'
                     }

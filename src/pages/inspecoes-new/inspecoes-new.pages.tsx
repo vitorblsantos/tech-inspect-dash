@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { Box, Button, FormHelperText, Grid, Input, List, ListItem, MenuItem, Paper, TextField, Typography } from '@mui/material'
+import { Box, Button, FormHelperText, Grid, IconButton, Input, MenuItem, Paper, Snackbar, SnackbarCloseReason, TextField, Typography } from '@mui/material'
 import { grey, red } from '@mui/material/colors'
+import CloseIcon from '@mui/icons-material/Close';
 
 import { ComponentFooter, ComponentHeader, ComponentView } from '../../components/index.components'
 import { EInspectionStatus, IInspection } from '../../interfaces/index.interfaces'
@@ -13,17 +14,40 @@ const edificios = [
 ]
 
 const InspectionForm = () => {
-  const [formData, setFormData] = useState<IInspection>({
-    created_at: new Date(),
+  const [formData, setFormData] = useState<Omit<IInspection, 'id' | 'created_at' | 'updated_at'>>({
     description: '',
     edificio: '',
     images: [],
+    inspected_at: new Date(),
     inspetor: 'Kevin Ma Mahr',
     status: EInspectionStatus['PENDING'],
-    updated_at: new Date()
   })
-
   const [error, setError] = useState('')
+  const [open, setOpen] = useState(false)
+
+  const handleClose = (
+    _event: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason,
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  }
+
+  const action = (
+    <>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </>
+  )
 
   const handleChange = (e: any) => {
     const { name, value } = e.target
@@ -38,6 +62,8 @@ const InspectionForm = () => {
     await ServiceBFF.post('/inspecoes', {
       payload: formData
     })
+
+    setOpen(true)
   }
 
   const handleImageUpload = async (e: any) => {
@@ -95,12 +121,12 @@ const InspectionForm = () => {
             <TextField
               fullWidth
               label="Data da Inspeção"
-              name="created_at"
+              name="inspected_at"
               type="date"
               InputLabelProps={{
                 shrink: true
               }}
-              value={formData.created_at}
+              value={formData.inspected_at}
               onChange={handleChange}
               required
             />
@@ -119,13 +145,11 @@ const InspectionForm = () => {
           </Grid>
           <Grid item xs={12}>
             <Input
-              accept="image/*"
               id="upload-images"
-              multiple
               type="file"
               name="images"
               onChange={handleImageUpload}
-              inputProps={{ multiple: true }}
+              inputProps={{ accept: 'image/*', multiple: true }}
             />
             <FormHelperText>Upload de no máximo 4 imagens.</FormHelperText>
             {error && <FormHelperText error>{error}</FormHelperText>}
@@ -160,6 +184,14 @@ const InspectionForm = () => {
           </Grid>
         </Grid>
       </Box>
+      <Snackbar
+        sx={{ marginBottom: '40px' }}
+        open={open}
+        autoHideDuration={2000}
+        onClose={handleClose}
+        message="Registro salvo com sucesso!"
+        action={action}
+      />
     </Paper>
   )
 }

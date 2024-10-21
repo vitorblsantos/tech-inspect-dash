@@ -4,7 +4,7 @@ export const PageNotifications = () => {
   return (
     <>
       <ComponentHeader />
-      <ComponentView />
+      <ComponentView>Notificacoes</ComponentView>
       <ComponentFooter />
     </>
   )

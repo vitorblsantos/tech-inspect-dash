@@ -26,11 +26,19 @@ export interface IDashboard {
 }
 
 export interface IInspection {
-  created_at: Date
+  id: string
+  created_at: {
+    _seconds: number;
+    _nanoseconds: number
+  }
   description: string
   edificio: string
-  images: any[]
+  images: string[]
   inspetor: string
+  inspected_at: Date
   status: EInspectionStatus
-  updated_at: Date
+  updated_at: {
+    _seconds: number;
+    _nanoseconds: number
+  }
 }
