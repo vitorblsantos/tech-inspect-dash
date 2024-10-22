@@ -21,7 +21,7 @@ const InspectionDetails = () => {
   const { id } = useParams()
 
     const handleData = async () => {
-    const { data }: { data: any } = await ServiceBFF.get(`/inspecoes/${id}`)
+    const { data } = await ServiceBFF.get(`/inspecoes/${id}`)
 
     setData(data)
   }
@@ -81,7 +81,7 @@ const InspectionDetails = () => {
         </Typography>
 
         {data?.images && !!data.images.length ? (
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', width: 400}}>
             {data.images.map((el: any, index: number) => (
               <img
                 key={index}
@@ -105,18 +105,18 @@ const InspectionDetails = () => {
           Analises
         </Typography>
 
-        {data?.images && !!data.images.manipulated ? (
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            {data.images.manipulated.map((el: any, index: number) => (
+        {data && data.images ? (
+          <Box sx={{ display: 'flex', gap: 2, width: 320 }}>
+            {data.images.map((el: any, index: number) => el.manipulated.map((image: any) => (
               <img
                 key={index}
-                src={el.original}
+                src={image}
                 alt={`Inspeção ${data?.id} - ${index}`}
                 width="100px"
                 height="100px"
                 style={{ objectFit: 'cover', borderRadius: '8px' }}
               />
-            ))}
+            )))}
           </Box>
         ) : (
           <Typography variant="body1" color="textSecondary">

@@ -1,4 +1,5 @@
 runtime: nodejs20
+service: tech-inspect
 handlers:
   - url: /(.*\..+)$
     static_files: dist/\1
